@@ -1,0 +1,470 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>BSPD 2019 &#8212; Test-MIL-Electrical-Docs  documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Matthew Griessler" href="Authors/Matthew Griessler.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bspd-2019">
+<span id="tkb"></span><h1>BSPD 2019<a class="headerlink" href="#bspd-2019" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">arsphotographika</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">April 2019</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+<p><strong>MIL0012-RA</strong> <strong>Thruster/Kill System</strong></p>
+<div class="section" id="electrical-team-members">
+<h2>Electrical Team Members<a class="headerlink" href="#electrical-team-members" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Firmware Des. By: Marquez Jones</div>
+<div class="line">PCB Des. By: Frank Mitchell</div>
+</div>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The Thruster/Kill System describes the PCB and accompanying Firmware to
+control and monitor Blue Robotics Thrusters and Kill network on
+Subjugator 8. The hardware for this system is designed to interface with
+the vehicle’s CAN communication system, 8 Blue robotics ESCs via PWM,
+and control power relays to both main vessel and its thrusters. A note
+about this, is the main vessel relay connection was repurposed in
+firmware to accommodate another relay as opposed to being an optional
+UART connection as designated in hardware. The CAN handling on this
+board is designed to filter for motherboard commands on the thruster
+channel and read in all kill messages sent on the kill channel. The
+board will also output the status of a hall effect sensor corresponding
+to GO periodically(explained later). The board also has two other hall
+effect connections which correspond to Hard Kill(On/Off) and Soft
+Kill(Enable). If a Hard Kill is asserted, power to main will be cut. If
+a Soft Kill is asserted via either CAN or the Hall effect, power to
+thrusters will be cut. Other possible sources of kill are documented in
+this manual.</p>
+</div>
+<div class="section" id="firmware-fsm">
+<h2>Firmware FSM<a class="headerlink" href="#firmware-fsm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="main-program">
+<h3>Main Program<a class="headerlink" href="#main-program" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+<div class="section" id="interrupt-service-routines">
+<h3>Interrupt Service Routines<a class="headerlink" href="#interrupt-service-routines" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+</div>
+<div class="section" id="kill-system">
+<h2>Kill System<a class="headerlink" href="#kill-system" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<p>THe Kill System describes sub’s safety features that prevents that
+disables the system thus disabling its ability to act erratically.
+There’s multiple reasons as to why we may want to kill sub and there are
+several ways to accomplish killing sub. Sub has two external ways to
+kill via hall effect magnets that should be mounted to the bulkhead.
+There’s also the ability to soft kill sub via a CAN message. Two passive
+kill features also exist,one being losing communication with motherboard
+and the other is a softer idle where it’ll tell thrusters to stop if
+motherboard ceases sending thruster commands. Refer to the table below
+to see kill sources and their effects.</p>
+</div>
+<div class="section" id="kill-sources-and-effects">
+<h3>Kill Sources and Effects<a class="headerlink" href="#kill-sources-and-effects" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="30%" />
+<col width="24%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Sources</th>
+<th class="head">Kills Thruster Power</th>
+<th class="head">Kills Main Power</th>
+<th class="head">Locks Program</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Hall Hard Kill</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>Hall Soft Kill</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>CAN Soft Kill</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>Heart Beat Missed</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>Thruster Idle</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="passive-kill-features">
+<h3>Passive Kill Features<a class="headerlink" href="#passive-kill-features" title="Permalink to this headline">¶</a></h3>
+<p>This section will more in depth describe passive or kills that aren’t
+caused by outside request or action. These are kills the board will
+enact if the board believes motherboard is inactive. The two passive
+kill features are the Heart Beat Kill and Thruster Idle. These are
+timing sensitive events. Idles will occur every 500 ms. Heart Beat Kills
+will occur every 1000 ms.</p>
+</div>
+<div class="section" id="passive-kill-table">
+<h3>Passive Kill Table<a class="headerlink" href="#passive-kill-table" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="12%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Sources</th>
+<th class="head">Period</th>
+<th class="head">To Unkill</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Heart Beat Missed</td>
+<td>1000ms</td>
+<td>Transmit Heart Beat Message</td>
+</tr>
+<tr class="row-odd"><td>Thruster Idle</td>
+<td>500ms</td>
+<td>Transmit Thruster Command</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="thruster-system">
+<h2>Thruster System<a class="headerlink" href="#thruster-system" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">ID</th>
+<th class="head">Thruster</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>FHL</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>FHR</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>FVL</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>FVR</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>BHL</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>BHR</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>BVL</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>BVR</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><div class="first line-block">
+<div class="line">The firmware on this board used the TM4C123G PWM module to
+communicate with the Blue Robotics Basic ESCs as opposed to
+providing PWM commands to the thrusters themselves. In this, I used
+the word communicate. This is because the ESCs accept a protocol
+similar to One Shot which effectively uses PWM to send commands.
+This is abstracted in CAN interface as the board will receive a
+thrust between 1 and -1 then convert that into the correct command
+to the ESCs. In this, it sends a PWM signal with a 2000us period.
+This is important to know if you wish to modify the firmware or if
+we want to use the board to control thrusters that aren’t blue
+robotics.</div>
+<div class="line">For this board, each thruster is assigned an ID 0 to 7.This is how
+commands are distributed. This will make more sense when looking at
+the thruster command packet. The thruster mapping is posted here.
+Note this is based on the connections diagram.</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="communications">
+<h2>Communications<a class="headerlink" href="#communications" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><div class="first line-block">
+<div class="line">In this version of the firmware, the primary means to communicate
+with the board is via control area network(CAN). This board also
+falls in line with the MIL CAN protocol of using task
+groups/channels. The firmware is set up to receive messages from
+both the thruster and kill channels. Check the ID assignment
+spreadsheets for the specifics on what ECUs and ECU IDs these refer
+to. In regards to ID filtering, this board will receive any kill
+messages on the kill channel. In this, if a Kill command is sent on
+the channe, it will kill. This board also filters for motherboard
+specific messages on the Thruster channel.</div>
+</div>
+</li>
+<li><div class="first line-block">
+<div class="line">This board will transmit two different messages. It will
+periodically transmit the status of the Go hall effect sensor. The
+only other case it should be transmitting is if the board is either
+soft or hard killed</div>
+</div>
+</li>
+</ul>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Hex</th>
+<th class="head">Ascii</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0x54</td>
+<td>’T’</td>
+<td>Thruster Header Byte</td>
+</tr>
+<tr class="row-odd"><td>0x4B</td>
+<td>’K’</td>
+<td>Kill Header Byte</td>
+</tr>
+<tr class="row-even"><td>0x47</td>
+<td>’G’</td>
+<td>Go Header Byte</td>
+</tr>
+<tr class="row-odd"><td>0x48</td>
+<td>’H’</td>
+<td>Heart Beat Header Byte</td>
+</tr>
+<tr class="row-even"><td>0x43</td>
+<td>’C’</td>
+<td>Command</td>
+</tr>
+<tr class="row-odd"><td>0x52</td>
+<td>’R’</td>
+<td>Response</td>
+</tr>
+<tr class="row-even"><td>0x41</td>
+<td>’A’</td>
+<td>Assert</td>
+</tr>
+<tr class="row-odd"><td>0x55</td>
+<td>’U’</td>
+<td>Unassert</td>
+</tr>
+<tr class="row-even"><td>0x48</td>
+<td>’H’</td>
+<td>Hard Kill</td>
+</tr>
+<tr class="row-odd"><td>0x53</td>
+<td>’S’</td>
+<td>Soft Kill</td>
+</tr>
+<tr class="row-even"><td>0x4D</td>
+<td>’M’</td>
+<td>Mother Board</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="kill-command-response-message-rx-tx">
+<h3>Kill Command/Response Message(RX/TX)<a class="headerlink" href="#kill-command-response-message-rx-tx" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Channel = Kill Channel</div>
+<div class="line">Will sending a ’C’(command) will tell the board to instantiate a kill
+by which the board will</div>
+<div class="line">respond with ’R’ to verify its state.</div>
+</div>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+<div class="section" id="thruster-command-message-rx-only">
+<h3>Thruster Command Message(RX Only)<a class="headerlink" href="#thruster-command-message-rx-only" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Channel = Thruster Channel</div>
+<div class="line">Is used to transmit thruster commands. Float value should be between
+-1 and 1. 1 being full forward and -1 being full reverse of that
+thruster.</div>
+</div>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+<div class="section" id="heart-beat-message-rx-only">
+<h3>Heart Beat Message(RX Only<a class="headerlink" href="#heart-beat-message-rx-only" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Channel = Thruster Channel</div>
+<div class="line">Must be sent by motherboard every 1000 ms or a kill state will occur.</div>
+</div>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+<div class="section" id="go-check-message-tx-only">
+<h3>Go Check Message(TX Only)<a class="headerlink" href="#go-check-message-tx-only" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Channel = Thruster Channel</div>
+<div class="line">Will be trasmitted every 500 ms. Checks the state of the go hall
+effect. If the hall effect is</div>
+<div class="line">attached, ’A’ for asserted will be transmitted. [0pt][0pt]</div>
+</div>
+</div>
+</div>
+<div class="section" id="connections">
+<h2>Connections<a class="headerlink" href="#connections" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">NOTE: The designated UART connector was implemented</div>
+<div class="line">as an additional relay control pin in the firmware. This is</div>
+<div class="line">designed to be a relay to control main power in case of Hard</div>
+<div class="line">Kill. The provided hardware does not have a mosfet to accommodate that</div>
+<div class="line">so an external one will have to attached. Refer to hardware schematic
+to</div>
+<div class="line">determine required external circuit.</div>
+</div>
+<p><a class="reference internal" href="KillBoard_connectors.png"><img alt="image" src="KillBoard_connectors.png" style="width: 100.0%;" /></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">BSPD 2019</a><ul>
+<li><a class="reference internal" href="#electrical-team-members">Electrical Team Members</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#firmware-fsm">Firmware FSM</a><ul>
+<li><a class="reference internal" href="#main-program">Main Program</a></li>
+<li><a class="reference internal" href="#interrupt-service-routines">Interrupt Service Routines</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#kill-system">Kill System</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#kill-sources-and-effects">Kill Sources and Effects</a></li>
+<li><a class="reference internal" href="#passive-kill-features">Passive Kill Features</a></li>
+<li><a class="reference internal" href="#passive-kill-table">Passive Kill Table</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thruster-system">Thruster System</a></li>
+<li><a class="reference internal" href="#communications">Communications</a><ul>
+<li><a class="reference internal" href="#kill-command-response-message-rx-tx">Kill Command/Response Message(RX/TX)</a></li>
+<li><a class="reference internal" href="#thruster-command-message-rx-only">Thruster Command Message(RX Only)</a></li>
+<li><a class="reference internal" href="#heart-beat-message-rx-only">Heart Beat Message(RX Only</a></li>
+<li><a class="reference internal" href="#go-check-message-tx-only">Go Check Message(TX Only)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#connections">Connections</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Authors/Matthew Griessler.html" title="previous chapter">Matthew Griessler</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/TKB.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, MIL Electrical Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/TKB.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
