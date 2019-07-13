@@ -1,11 +1,11 @@
 .. _TKB:
 
 =========
-BSPD 2019
+ MIL0012-RA
 =========
 
-:Author: arsphotographika
-:Date:   April 2019
+:Author: Marquez Jones
+:Date:   Spring 2019
 
 |image|
 
